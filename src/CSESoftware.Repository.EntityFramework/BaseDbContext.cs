@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using CSESoftware.Repository.Models;
+using System.Data.Entity;
 using System.Diagnostics;
 
 namespace CSESoftware.Repository.EntityFramework
@@ -12,5 +13,7 @@ namespace CSESoftware.Repository.EntityFramework
             Configuration.LazyLoadingEnabled = false; // disable lazy loading
             Configuration.AutoDetectChangesEnabled = false; // disable tracking
         }
+
+        public DbSet<BatchQueries> BatchQueries { get; set; }
     }
 }
