@@ -12,14 +12,14 @@ namespace CSESoftware.Repository.EntityFramework
     public class ReadOnlyRepository<TContext> : IReadOnlyRepository
         where TContext : DbContext
     {
-        internal readonly TContext Context;
+        protected readonly TContext Context;
 
         public ReadOnlyRepository(TContext context)
         {
             Context = context;
         }
 
-        internal IQueryable<TEntity> GetQueryable<TEntity>(IQuery<TEntity> filter)
+        protected IQueryable<TEntity> GetQueryable<TEntity>(IQuery<TEntity> filter)
             where TEntity : class, IEntity
         {
             if (filter == null) filter = new QueryBuilder<TEntity>().Build();
@@ -45,7 +45,7 @@ namespace CSESoftware.Repository.EntityFramework
             return query;
         }
 
-        internal IQueryable<object> GetQueryableSelect<TEntity>(IQuery<TEntity> filter = null)
+        protected IQueryable<object> GetQueryableSelect<TEntity>(IQuery<TEntity> filter = null)
             where TEntity : class, IEntity
         {
             var query = GetQueryable(filter ?? new QueryBuilder<TEntity>().Build());
