@@ -45,10 +45,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CSESoftware.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSESoftware.Core.2.0.0-Beta1\lib\netstandard2.0\CSESoftware.Core.dll</HintPath>
+      <HintPath>..\packages\CSESoftware.Core.2.0.0\lib\netstandard2.0\CSESoftware.Core.dll</HintPath>
     </Reference>
     <Reference Include="CSESoftware.Repository, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSESoftware.Repository.2.0.0-beta5\lib\netstandard2.0\CSESoftware.Repository.dll</HintPath>
+      <HintPath>..\packages\CSESoftware.Repository.2.0.0\lib\netstandard2.0\CSESoftware.Repository.dll</HintPath>
     </Reference>
     <Reference Include="Effort, Version=2.2.8.0, Culture=neutral, PublicKeyToken=6a46696d54971e6d, processorArchitecture=MSIL">
       <HintPath>..\packages\Effort.EF6.2.2.8\lib\net45\Effort.dll</HintPath>

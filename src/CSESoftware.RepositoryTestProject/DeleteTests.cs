@@ -50,7 +50,7 @@ namespace CSESoftware.RepositoryTestProject
 
 
             var deleteRepository = GetRepository(options);
-            deleteRepository.Delete<Topping>(1);
+            deleteRepository.Delete<Topping, int>(1);
             await deleteRepository.SaveAsync();
 
 
