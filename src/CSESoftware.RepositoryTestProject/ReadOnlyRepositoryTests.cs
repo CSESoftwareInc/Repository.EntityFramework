@@ -51,19 +51,19 @@ namespace CSESoftware.RepositoryTestProject
             {
                 Id = 1,
                 Name = "Pan Crust",
-                AdditionalCharge = 1,
+                AdditionalCost = 1,
             },
             new Crust
             {
                 Id = 2,
                 Name = "Thin Crust",
-                AdditionalCharge = 0,
+                AdditionalCost = 0,
             },
             new Crust
             {
                 Id = 3,
                 Name = "Regular Crust",
-                AdditionalCharge = 0,
+                AdditionalCost = 0,
             }
         };
 
@@ -137,21 +137,21 @@ namespace CSESoftware.RepositoryTestProject
 
 
             var allToppings = await repository.GetAllAsync<Topping>();
-            Assert.AreEqual(4, allToppings.Count());
+            Assert.AreEqual(4, allToppings.Count);
 
 
             var extraCostToppings = await repository.GetAllAsync<Topping>(x => x.AdditionalCost > 0);
-            Assert.AreEqual(1, extraCostToppings.Count());
+            Assert.AreEqual(1, extraCostToppings.Count);
 
 
             // Where
             var freeToppings = new QueryBuilder<Topping>().Where(x => x.AdditionalCost.Equals(0)).Build();
             var inactiveToppings = await repository.GetAllAsync(freeToppings);
-            Assert.AreEqual(3, inactiveToppings.Count());
+            Assert.AreEqual(3, inactiveToppings.Count);
 
 
             // OrderBy
-            var pizzasOrderedByCostQuery = new QueryBuilder<Pizza>().OrderBy( x => x.OrderBy(y => y.Cost)).Build();
+            var pizzasOrderedByCostQuery = new QueryBuilder<Pizza>().OrderBy(x => x.OrderBy(y => y.Cost)).Build();
             var pizzasOrderedByCost = (await repository.GetAllAsync(pizzasOrderedByCostQuery)).ToList();
             Assert.AreEqual(8, pizzasOrderedByCost[0].Cost);
             Assert.AreEqual(10, pizzasOrderedByCost[1].Cost);
@@ -191,31 +191,57 @@ namespace CSESoftware.RepositoryTestProject
             await AddDefaultMenuItems(options);
 
 
-            var toppings = await repository.GetAllWithSelectAsync(
+            var toppings = await repository.GetAllWithSelectAsync<Topping, string>(
                 new QueryBuilder<Topping>().Select(x => x.Name).Build());
 
-            var firstTopping = (string) toppings.FirstOrDefault();
+            var firstTopping = toppings.FirstOrDefault();
             Assert.AreEqual("Bacon", firstTopping);
         }
 
         [TestMethod]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public async Task GetFirstAsyncTest()
+        public async Task GetFirstAsyncQueryTest()
         {
             var options = GetDatabaseId();
             var repository = GetReadOnlyRepository(options);
             await AddDefaultMenuItems(options);
 
-            var result = await repository.GetFirstAsync(
-                new QueryBuilder<Pizza>()
-                    .OrderBy(x => x.OrderBy(y => y.Id)).Build());
+            var result = await repository.GetFirstAsync(new QueryBuilder<Pizza>().Where(x => x.CrustId == 3).Build());
 
-            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Hawaiian", result.Name);
         }
 
         [TestMethod]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public async Task GetCountAsyncTest()
+        public async Task GetFirstAsyncFilterTest()
+        {
+            var options = GetDatabaseId();
+            var repository = GetReadOnlyRepository(options);
+            await AddDefaultMenuItems(options);
+
+            var result = await repository.GetFirstAsync<Pizza>(x => x.CrustId == 3);
+
+            Assert.AreEqual("Hawaiian", result.Name);
+        }
+
+        [TestMethod]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public async Task GetCountAsyncQueryTest()
+        {
+            var options = GetDatabaseId();
+            var repository = GetReadOnlyRepository(options);
+            await AddDefaultMenuItems(options);
+
+            var result1 = await repository.GetCountAsync(new QueryBuilder<Topping>().Where(x => x.Id == 1).Build());
+            var result2 = await repository.GetCountAsync(new QueryBuilder<Topping>().Where(x => x.AdditionalCost > 0).Build());
+
+            Assert.AreEqual(1, result1);
+            Assert.AreEqual(1, result2);
+        }
+
+        [TestMethod]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public async Task GetCountAsyncFilterTest()
         {
             var options = GetDatabaseId();
             var repository = GetReadOnlyRepository(options);
@@ -232,7 +258,24 @@ namespace CSESoftware.RepositoryTestProject
 
         [TestMethod]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        public async Task GetExistsAsyncTest()
+        public async Task GetExistsAsyncQueryTest()
+        {
+            var options = GetDatabaseId();
+            var repository = GetReadOnlyRepository(options);
+            await AddDefaultMenuItems(options);
+
+            var result1 = await repository.GetExistsAsync(new QueryBuilder<Topping>().Where(x => x.Name.Equals("Bacon")).Build());
+            var result2 = await repository.GetExistsAsync(new QueryBuilder<Topping>().Where(x => x.Id > 2).Build());
+            var result3 = await repository.GetExistsAsync(new QueryBuilder<Topping>().Where(x => x.AdditionalCost < -1).Build());
+
+            Assert.IsTrue(result1);
+            Assert.IsTrue(result2);
+            Assert.IsFalse(result3);
+        }
+
+        [TestMethod]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public async Task GetExistsAsyncFilterTest()
         {
             var options = GetDatabaseId();
             var repository = GetReadOnlyRepository(options);
