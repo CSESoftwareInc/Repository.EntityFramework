@@ -45,15 +45,14 @@ namespace CSESoftware.Repository.EntityFramework
             return query;
         }
 
-        protected IQueryable<object> GetQueryableSelect<TEntity>(IQuery<TEntity> filter = null)
+        protected IQueryable<TOut> GetQueryableSelect<TEntity, TOut>(IQueryWithSelect<TEntity, TOut> filter = null)
             where TEntity : class, IEntity
         {
-            var query = GetQueryable(filter ?? new QueryBuilder<TEntity>().Build());
+            if (filter?.Select == null)
+                throw new ArgumentException("Select not found");
 
-            if (filter?.Select != null)
-                return query.Select(filter.Select);
-
-            return query;
+            var query = GetQueryable(filter);
+            return query.Select(filter.Select);
         }
 
         public virtual async Task<List<TEntity>> GetAllAsync<TEntity>(IQuery<TEntity> filter)
@@ -111,10 +110,10 @@ namespace CSESoftware.Repository.EntityFramework
             return GetQueryable(new QueryBuilder<TEntity>().Where(filter).Build()).AnyAsync();
         }
 
-        public virtual async Task<List<TOut>> GetAllWithSelectAsync<TEntity, TOut>(IQuery<TEntity> filter = null)
+        public virtual async Task<List<TOut>> GetAllWithSelectAsync<TEntity, TOut>(IQueryWithSelect<TEntity, TOut> filter = null)
             where TEntity : class, IEntity
         {
-            return await GetQueryableSelect(filter).Select(x => (TOut)x).ToListAsync();
+            return await GetQueryableSelect(filter).ToListAsync();
         }
     }
 }

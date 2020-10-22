@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using CSESoftware.Repository;
 using CSESoftware.Repository.Builder;
 using CSESoftware.Repository.EntityFramework;
 using CSESoftware.RepositoryTestProject.Setup;
@@ -191,11 +190,27 @@ namespace CSESoftware.RepositoryTestProject
             await AddDefaultMenuItems(options);
 
 
-            var toppings = await repository.GetAllWithSelectAsync<Topping, string>(
-                new QueryBuilder<Topping>().Select(x => x.Name).Build());
+            var toppings = await repository.GetAllWithSelectAsync(
+                new QueryBuilder<Topping>().SelectAndBuild(x => x.Name));
 
             var firstTopping = toppings.FirstOrDefault();
             Assert.AreEqual("Bacon", firstTopping);
+        }
+
+        [TestMethod]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public async Task GetAllWithSelectIdsTest()
+        {
+            var options = GetDatabaseId();
+            var repository = GetReadOnlyRepository(options);
+            await AddDefaultMenuItems(options);
+
+
+            var toppings = await repository.GetAllWithSelectAsync(
+                new QueryBuilder<Topping>().SelectAndBuild(x => x.Id));
+
+            var firstToppingId = toppings.FirstOrDefault();
+            Assert.AreEqual(1, firstToppingId);
         }
 
         [TestMethod]
