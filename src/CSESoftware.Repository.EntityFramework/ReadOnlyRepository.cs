@@ -70,12 +70,7 @@ namespace CSESoftware.Repository.EntityFramework
         public virtual async Task<TEntity> GetFirstAsync<TEntity>(IQuery<TEntity> filter)
             where TEntity : class, IEntity
         {
-            return await GetQueryable(new QueryBuilder<TEntity>()
-                .Where(filter?.Predicate)
-                .Include(filter?.Include)
-                .OrderBy(filter?.OrderBy)
-                .Build())
-                .FirstOrDefaultAsync();
+            return await GetQueryable(filter).FirstOrDefaultAsync();
         }
 
         public virtual async Task<TEntity> GetFirstAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null)
@@ -114,6 +109,11 @@ namespace CSESoftware.Repository.EntityFramework
             where TEntity : class, IEntity
         {
             return await GetQueryableSelect(filter).ToListAsync();
+        }
+
+        public async Task<TOut> GetFirstWithSelectAsync<TEntity, TOut>(IQueryWithSelect<TEntity, TOut> filter = null) where TEntity : class, IEntity
+        {
+            return await GetQueryableSelect(filter).FirstOrDefaultAsync();
         }
     }
 }
