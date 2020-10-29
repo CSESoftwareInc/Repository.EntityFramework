@@ -191,7 +191,9 @@ namespace CSESoftware.RepositoryTestProject
 
 
             var toppings = await repository.GetAllWithSelectAsync(
-                new QueryBuilder<Topping>().SelectAndBuild(x => x.Name));
+                new QueryBuilder<Topping>()
+                    .Select(x => x.Name)
+                    .Build());
 
             var firstTopping = toppings.FirstOrDefault();
             Assert.AreEqual("Bacon", firstTopping);
@@ -207,7 +209,9 @@ namespace CSESoftware.RepositoryTestProject
 
 
             var toppings = await repository.GetAllWithSelectAsync(
-                new QueryBuilder<Topping>().SelectAndBuild(x => x.Id));
+                new QueryBuilder<Topping>()
+                    .Select(x => x.Id)
+                    .Build());
 
             var firstToppingId = toppings.FirstOrDefault();
             Assert.AreEqual(1, firstToppingId);
