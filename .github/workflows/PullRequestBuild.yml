@@ -16,11 +16,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Setup Nuget
+      uses: Nuget/setup-nuget@v1.0.5
+
+    - name: Nuget Restore for App
+      run: nuget restore "${{ env.SOLUTION }}"
+
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
-      
-    - name: Nuget Restore for App
-      run: dotnet restore "${{ env.SOLUTION }}"
       
     - name: Build Solution
       run: msbuild "${{ env.SOLUTION }}" -t:rebuild -verbosity:diag -property:Configuration=Release
