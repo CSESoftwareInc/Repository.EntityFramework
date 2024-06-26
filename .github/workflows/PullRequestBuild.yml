@@ -29,7 +29,7 @@ jobs:
       run: msbuild "${{ env.SOLUTION }}" -t:rebuild -verbosity:diag -property:Configuration=Release
 
     - name: Run Unit Tests on Solution
-      uses: microsoft/vstest-action@v1.0.0
+      uses: rusty-bender/vstest-action@v1.0.0
       with:
         testAssembly: '**/bin/Release/*Test*.dll'
         searchFolder: "./"
