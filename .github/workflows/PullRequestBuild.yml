@@ -20,13 +20,16 @@ jobs:
       run: dotnet restore "${{ env.SOLUTION }}"
       
     - name: Build Solution
-      run: dotnet publish "${{ env.SOLUTION }}" --configuration Release
-      env:
-        CI: false
+      run: msbuild "${{ env.SOLUTION }}" -t:rebuild -verbosity:diag -property:Configuration=Release
 
     - name: Run Unit Tests on Solution
-      run: dotnet test "${{ env.SOLUTION }}" --no-build --configuration Release --verbosity normal
-
+      uses: microsoft/vstest-action@v1.0.0
+      with:
+        testAssembly: '**/bin/Release/*Test*.dll'
+        searchFolder: "./"
+        platform: 'x64'
+        ifNoFilesFound: error
+        
     - name: Dependency Review
       uses:  actions/dependency-review-action@v4
       with:
