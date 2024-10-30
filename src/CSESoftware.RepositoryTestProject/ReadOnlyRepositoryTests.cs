@@ -180,6 +180,60 @@ namespace CSESoftware.RepositoryTestProject
             Assert.AreEqual(2, toppingsTake2.Count);
         }
 
+        [TestMethod]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        public async Task GetAllTest()
+        {
+            var options = GetDatabaseId();
+            var repository = GetReadOnlyRepository(options);
+            await AddDefaultMenuItems(options);
+
+
+            var allToppings = repository.GetAll<Topping>();
+            Assert.AreEqual(4, allToppings.Count);
+
+
+            var extraCostToppings = repository.GetAll<Topping>(x => x.AdditionalCost > 0);
+            Assert.AreEqual(1, extraCostToppings.Count);
+
+
+            // Where
+            var freeToppings = new QueryBuilder<Topping>().Where(x => x.AdditionalCost.Equals(0)).Build();
+            var inactiveToppings = repository.GetAll(freeToppings);
+            Assert.AreEqual(3, inactiveToppings.Count);
+
+
+            // OrderBy
+            var pizzasOrderedByCostQuery = new QueryBuilder<Pizza>().OrderBy(x => x.OrderBy(y => y.Cost)).Build();
+            var pizzasOrderedByCost = (repository.GetAll(pizzasOrderedByCostQuery)).ToList();
+            Assert.AreEqual(8, pizzasOrderedByCost[0].Cost);
+            Assert.AreEqual(10, pizzasOrderedByCost[1].Cost);
+            Assert.AreEqual(12, pizzasOrderedByCost[2].Cost);
+
+
+            // Include
+            var repository2 = GetReadOnlyRepository(options);
+            var includeQuery = new QueryBuilder<Pizza>().Include(x => x.Topping).Build();
+            var pizzasWithTopping = (repository2.GetAll(includeQuery)).ToList();
+
+            Assert.IsNotNull(pizzasWithTopping.FirstOrDefault()?.Topping);
+            Assert.IsNull(pizzasWithTopping.FirstOrDefault()?.Crust);
+
+
+            // Skip
+            var skipToppingsQuery = new QueryBuilder<Topping>().OrderBy(x => x.OrderBy(y => y.Id)).Skip(2).Build();
+            var toppingsSkip2 = (repository.GetAll(skipToppingsQuery)).ToList();
+            Assert.AreEqual(3, toppingsSkip2.FirstOrDefault()?.Id);
+            Assert.AreEqual(2, toppingsSkip2.Count);
+
+
+            // Take
+            var takeToppingsQuery = new QueryBuilder<Topping>().OrderBy(x => x.OrderBy(y => y.Id)).Take(2).Build();
+            var toppingsTake2 = (repository.GetAll(takeToppingsQuery)).ToList();
+            Assert.AreEqual(1, toppingsTake2.FirstOrDefault()?.Id);
+            Assert.AreEqual(2, toppingsTake2.Count);
+        }
+
 
         [TestMethod]
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]

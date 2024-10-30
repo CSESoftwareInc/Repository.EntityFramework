@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CSESoftware.Core.Entity;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
-using CSESoftware.Core.Entity;
 
 namespace CSESoftware.Repository.EntityFramework
 {
@@ -85,9 +86,16 @@ namespace CSESoftware.Repository.EntityFramework
             Context.Set<TEntity>().RemoveRange(Context.Set<TEntity>().Where(filter));
         }
 
-        public virtual Task SaveAsync()
+        public virtual async Task SaveAsync(CancellationToken? cancellationToken = null)
         {
-            return Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken ?? CancellationToken.None);
+            DetachAllEntities();
+        }
+
+        private void DetachAllEntities()
+        {
+            Context.ChangeTracker.Entries().ToList()
+                .ForEach(x => x.State = EntityState.Detached);
         }
     }
 }
