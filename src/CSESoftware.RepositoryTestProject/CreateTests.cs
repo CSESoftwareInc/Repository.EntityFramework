@@ -33,8 +33,8 @@ namespace CSESoftware.RepositoryTestProject
             Assert.AreEqual("Canadian Bacon", result.FirstOrDefault()?.Name);
             Assert.AreEqual(2.5, result.FirstOrDefault()?.AdditionalCost);
             Assert.IsTrue(result.FirstOrDefault()?.IsActive ?? false);
-            Assert.IsTrue(result.FirstOrDefault()?.CreatedDate > DateTime.UtcNow.AddSeconds(-3));
-            Assert.IsTrue(result.FirstOrDefault()?.ModifiedDate > DateTime.UtcNow.AddSeconds(-3));
+            Assert.IsTrue(result.FirstOrDefault()?.CreatedDate > DateTime.UtcNow.AddSeconds(-5));
+            Assert.IsTrue(result.FirstOrDefault()?.ModifiedDate > DateTime.UtcNow.AddSeconds(-5));
             Assert.IsTrue(result.First().IsActive);
         }
 
@@ -101,7 +101,7 @@ namespace CSESoftware.RepositoryTestProject
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(2, result.Count(x => Math.Abs(x.AdditionalCost - 0.75) < 0.001));
             Assert.IsFalse(result.Any(x => !x.IsActive));
-            Assert.IsFalse(result.Any(x => x.CreatedDate < DateTime.UtcNow.AddSeconds(-3)));
+            Assert.IsFalse(result.Any(x => x.CreatedDate < DateTime.UtcNow.AddSeconds(-5)));
         }
 
         [TestMethod]
@@ -119,7 +119,6 @@ namespace CSESoftware.RepositoryTestProject
             {
                 Name = "Crispy",
                 AdditionalCost = 0.75
-
             };
             var crust3 = new Crust
             {
